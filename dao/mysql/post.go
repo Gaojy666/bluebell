@@ -25,10 +25,13 @@ func GetPostByID(pid int64) (post *models.Post, err error) {
 	return
 }
 
+// GetPostList 查询帖子列表
 func GetPostList(PageNum, PageSize int64) (posts []*models.Post, err error) {
 	sqlStr := `select 
 			post_id, title, content, author_id, community_id, create_time
 			from post 
+			order by create_time
+			desc
 			limit ?,?
 			`
 	posts = make([]*models.Post, 0, 2)

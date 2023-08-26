@@ -48,6 +48,7 @@ func VoteForPost(userID, postID string, value float64) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 500*time.Millisecond)
 	defer cancel()
 	postTime := client.ZScore(ctx, getRedisKey(KeyPostTimeZset), postID).Val()
+	// 每个帖子自发表之日起一个星期之内允许用户投票，超过一个星期就不允许再投票了
 	if float64(time.Now().Unix())-postTime > oneWeekInSeconds {
 		return ErrVoteTimeExpire
 	}
@@ -55,6 +56,7 @@ func VoteForPost(userID, postID string, value float64) error {
 	// 先查之前的投票纪录
 	ctx, cancel = context.WithTimeout(context.Background(), 500*time.Millisecond)
 	defer cancel()
+	// 查询当前用户给这个帖子投票的分数
 	ov := client.ZScore(ctx, getRedisKey(KeyPostVotedZsetPrefix+postID), userID).Val()
 	var flag float64
 	if value > ov {

@@ -20,3 +20,10 @@ type ParamVoteData struct {
 	PostID    string `json:"post_id" binding:"required"`                       // 帖子id
 	Direction int8   `json:"direction,string" binding:"required,oneof=1 -1 0"` // 赞成票(1)or反对票(-1)取消投票(0)
 }
+
+// ParamPostList 获取帖子列表query string参数
+type ParamPostList struct {
+	Page  int64  `json:"page" form:"page"`
+	Size  int64  `json:"size" form:"size"`
+	Order string `json:"order" form:"order"`
+}

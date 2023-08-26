@@ -10,6 +10,11 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+const (
+	orderTime  = "time"
+	orderScore = "score"
+)
+
 // CreatePostHandler 创建帖子的处理函数
 func CreatePostHandler(c *gin.Context) {
 	// 1.获取参数及参数的校验
@@ -62,8 +67,43 @@ func GetPostDetailHandler(c *gin.Context) {
 }
 
 // GetPostListDetail 获取帖子列表的接口
-func GetPostListDetail(c *gin.Context) {
+func GetPostListHandler(c *gin.Context) {
 	// 帖子列表有可能上万条，无法全部展示，可以分页展示
+	// 获取分页参数
+	PageNum, PageSize := GetPageInfo(c)
+	// 获取数据
+	data, err := logic.GetPostList(PageNum, PageSize)
+	if err != nil {
+		zap.L().Error("logic.GetPostList() failed", zap.Error(err))
+		ResponseError(c, CodeServerBusy)
+		return
+	}
+	// 返回响应
+	ResponseSuccess(c, data)
+}
+
+// GetPostListDetail2 根据时间或分数排序
+// 根据前端传来的参数，动态的获取帖子列表
+// 按创建时间排序，或者 按照分数排序
+// 1.获取参数
+// 2.去redis查询id列表
+// 3.根据id去数据库查询详细信息
+func GetPostListHandler2(c *gin.Context) {
+	// GET请求参数(query string)：/api/v1/posts2?page=1&size=10&order=time
+	// 初始化结构体时指定初始参数
+	p := models.ParamPostList{
+		Page:  1,
+		Size:  10,
+		Order: orderTime, // magic string 防止硬编码
+	}
+	if err := c.ShouldBindQuery(); err != nil {
+		zap.L().Error("GetPostListHandler2 with invalid params", zap.Error(err))
+		ResponseError(c, CodeInvalidParam)
+		return
+	}
+	// c.shouldBind()  根据请求的数据选择相应的方法去获取数据
+	// c.ShouldBindJson()// 如果请求中携带的是Json格式的数据，采用这个方法获取到数据
+
 	// 获取分页参数
 	PageNum, PageSize := GetPageInfo(c)
 	// 获取数据
