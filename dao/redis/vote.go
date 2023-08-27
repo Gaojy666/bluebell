@@ -42,6 +42,24 @@ dirction=-1时，有两种情况：
 	2.到期之后，删除那个KeyPostVotedZSetPrefix
 */
 
+func CreatePost(PostID int64) error {
+	// 帖子时间
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	defer cancel()
+	_, err := client.ZAdd(ctx, getRedisKey(KeyPostTimeZset), &redis.Z{
+		Score:  float64(time.Now().Unix()),
+		Member: PostID,
+	}).Result()
+	// 帖子分数
+	ctx, cancel = context.WithTimeout(context.Background(), time.Second)
+	defer cancel()
+	_, err = client.ZAdd(ctx, getRedisKey(KeyPostScoreZset), &redis.Z{
+		Score:  float64(time.Now().Unix()),
+		Member: PostID,
+	}).Result()
+	return err
+}
+
 func VoteForPost(userID, postID string, value float64) error {
 	// 1. 判断投票限制
 	// 去redis取帖子发布时间
@@ -69,7 +87,7 @@ func VoteForPost(userID, postID string, value float64) error {
 	defer cancel()
 	// 更新分数
 	_, err := client.ZIncrBy(ctx, getRedisKey(KeyPostScoreZset), flag*diff*scorePerVote, postID).Result()
-	if ErrVoteTimeExpire != nil {
+	if err != nil {
 		return err
 	}
 	// 3. 记录用户为该帖子投过票

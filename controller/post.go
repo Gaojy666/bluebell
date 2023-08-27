@@ -10,11 +10,6 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-const (
-	orderTime  = "time"
-	orderScore = "score"
-)
-
 // CreatePostHandler 创建帖子的处理函数
 func CreatePostHandler(c *gin.Context) {
 	// 1.获取参数及参数的校验
@@ -91,12 +86,13 @@ func GetPostListHandler(c *gin.Context) {
 func GetPostListHandler2(c *gin.Context) {
 	// GET请求参数(query string)：/api/v1/posts2?page=1&size=10&order=time
 	// 初始化结构体时指定初始参数
-	p := models.ParamPostList{
+	p := &models.ParamPostList{
 		Page:  1,
 		Size:  10,
-		Order: orderTime, // magic string 防止硬编码
+		Order: models.OrderTime, // magic string 防止硬编码
 	}
-	if err := c.ShouldBindQuery(); err != nil {
+	// 1.获取参数
+	if err := c.ShouldBindQuery(p); err != nil {
 		zap.L().Error("GetPostListHandler2 with invalid params", zap.Error(err))
 		ResponseError(c, CodeInvalidParam)
 		return
@@ -104,10 +100,8 @@ func GetPostListHandler2(c *gin.Context) {
 	// c.shouldBind()  根据请求的数据选择相应的方法去获取数据
 	// c.ShouldBindJson()// 如果请求中携带的是Json格式的数据，采用这个方法获取到数据
 
-	// 获取分页参数
-	PageNum, PageSize := GetPageInfo(c)
 	// 获取数据
-	data, err := logic.GetPostList(PageNum, PageSize)
+	data, err := logic.GetPostList2(p)
 	if err != nil {
 		zap.L().Error("logic.GetPostList() failed", zap.Error(err))
 		ResponseError(c, CodeServerBusy)
