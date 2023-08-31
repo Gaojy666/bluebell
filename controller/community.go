@@ -22,7 +22,7 @@ func CommunityHandler(c *gin.Context) {
 	ResponseSuccess(c, data)
 }
 
-// CommunityDetailHandler社区分类详情
+// CommunityDetailHandler 根据社区ID查询社区详情
 func CommunityDetailHandler(c *gin.Context) {
 	// 1.获取社区id
 	idStr := c.Param("id")

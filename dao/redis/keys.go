@@ -11,6 +11,7 @@ const (
 	KeyPostTimeZset        = "post:time"   // zset;帖子以发帖时间
 	KeyPostScoreZset       = "post:score"  // zset;帖子及投票的分数
 	KeyPostVotedZsetPrefix = "post:voted:" // zset;记录用户及投票类型;参数是post id
+	keysCommunitySetPF     = "community:"  // set;保存每个分区下帖子的id
 )
 
 func getRedisKey(key string) string {

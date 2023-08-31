@@ -6,7 +6,13 @@ import (
 	"bluebell/middlewares"
 	"net/http"
 
+	swaggerFiles "github.com/swaggo/files"
+
 	"github.com/gin-gonic/gin"
+
+	_ "bluebell/docs" // 千万不要忘了导入把你上一步生成的docs
+
+	gs "github.com/swaggo/gin-swagger"
 )
 
 func Setup(mode string) *gin.Engine {
@@ -15,6 +21,8 @@ func Setup(mode string) *gin.Engine {
 	}
 	r := gin.New()
 	r.Use(logger.GinLogger(), logger.GinRecovery(true))
+
+	r.GET("/swagger/*any", gs.WrapHandler(swaggerFiles.Handler))
 
 	v1 := r.Group("api/v1")
 

@@ -50,12 +50,14 @@ func GetPostList(PageNum, PageSize int64) (posts []*models.Post, err error) {
 
 // GetPostListByIDs 根据给定的ID列表查询帖子数据
 func GetPostListByIDs(ids []string) (postList []*models.Post, err error) {
+	// FIND_IN_SET，根据指定顺序返回，否则默认按照id顺序返回
 	sqlStr := `select
 			post_id, title, content, author_id, community_id, create_time
 			from post
 			while post_id  in (?)
 			order by FIND_IN_SET(post_id, ?)
 		`
+	// sqlx.In批量查询
 	query, args, err := sqlx.In(sqlStr, ids, strings.Join(ids, ","))
 	fmt.Printf("query: %#v\n", query)
 	fmt.Printf("args: %#v\n", args)

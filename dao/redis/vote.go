@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"math"
+	"strconv"
 	"time"
 
 	"github.com/go-redis/redis/v8"
@@ -16,6 +17,7 @@ const (
 
 var (
 	ErrVoteTimeExpire = errors.New("投票时间已过")
+	ErrVoteRepeated   = errors.New("不允许重复投票")
 )
 
 // 投票功能
@@ -42,21 +44,31 @@ dirction=-1时，有两种情况：
 	2.到期之后，删除那个KeyPostVotedZSetPrefix
 */
 
-func CreatePost(PostID int64) error {
+func CreatePost(PostID, CommunityID int64) error {
+	pipeline := client.TxPipeline()
 	// 帖子时间
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
-	_, err := client.ZAdd(ctx, getRedisKey(KeyPostTimeZset), &redis.Z{
+	pipeline.ZAdd(ctx, getRedisKey(KeyPostTimeZset), &redis.Z{
 		Score:  float64(time.Now().Unix()),
 		Member: PostID,
-	}).Result()
+	})
 	// 帖子分数
 	ctx, cancel = context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
-	_, err = client.ZAdd(ctx, getRedisKey(KeyPostScoreZset), &redis.Z{
+	pipeline.ZAdd(ctx, getRedisKey(KeyPostScoreZset), &redis.Z{
 		Score:  float64(time.Now().Unix()),
 		Member: PostID,
-	}).Result()
+	})
+	ctx, cancel = context.WithTimeout(context.Background(), time.Second)
+	defer cancel()
+	// 更新：把帖子id加到社区set中
+	cKey := getRedisKey(keysCommunitySetPF) + strconv.Itoa(int(CommunityID))
+	ctx, cancel = context.WithTimeout(context.Background(), time.Second)
+	defer cancel()
+	pipeline.SAdd(ctx, cKey, PostID)
+
+	_, err := pipeline.Exec(ctx)
 	return err
 }
 
@@ -70,12 +82,18 @@ func VoteForPost(userID, postID string, value float64) error {
 	if float64(time.Now().Unix())-postTime > oneWeekInSeconds {
 		return ErrVoteTimeExpire
 	}
+	// 2和3需要放到一个pipeline事务中操作
+	pipeline := client.TxPipeline()
 	// 2.更新帖子的分数
 	// 先查之前的投票纪录
 	ctx, cancel = context.WithTimeout(context.Background(), 500*time.Millisecond)
 	defer cancel()
 	// 查询当前用户给这个帖子投票的分数
 	ov := client.ZScore(ctx, getRedisKey(KeyPostVotedZsetPrefix+postID), userID).Val()
+	// 如果这一次投票的值和之前保存的值一致，就提示不允许重复投票
+	if value == ov {
+		return ErrVoteRepeated
+	}
 	var flag float64
 	if value > ov {
 		flag = 1
@@ -86,21 +104,22 @@ func VoteForPost(userID, postID string, value float64) error {
 	ctx, cancel = context.WithTimeout(context.Background(), 500*time.Millisecond)
 	defer cancel()
 	// 更新分数
-	_, err := client.ZIncrBy(ctx, getRedisKey(KeyPostScoreZset), flag*diff*scorePerVote, postID).Result()
-	if err != nil {
-		return err
-	}
+	pipeline.ZIncrBy(ctx, getRedisKey(KeyPostScoreZset), flag*diff*scorePerVote, postID)
+
 	// 3. 记录用户为该帖子投过票
 	ctx, cancel = context.WithTimeout(context.Background(), 500*time.Millisecond)
 	defer cancel()
 	if value == 0 {
 		// 取消投票
-		_, err = client.ZRem(ctx, getRedisKey(KeyPostVotedZsetPrefix+postID), userID).Result()
+		pipeline.ZRem(ctx, getRedisKey(KeyPostVotedZsetPrefix+postID), userID)
 	} else {
-		_, err = client.ZAdd(ctx, getRedisKey(KeyPostVotedZsetPrefix+postID), &redis.Z{
+		pipeline.ZAdd(ctx, getRedisKey(KeyPostVotedZsetPrefix+postID), &redis.Z{
 			Score:  value, // 赞成票还是反对票
 			Member: userID,
-		}).Result()
+		})
 	}
+	ctx, cancel = context.WithTimeout(context.Background(), 500*time.Millisecond)
+	defer cancel()
+	_, err := pipeline.Exec(ctx)
 	return err
 }
