@@ -839,3 +839,17 @@
 {"level":"DEBUG","time":"2023-08-31T23:58:51.808+0800","caller":"bluebell/main.go:51","msg":"logger init success..."}
 {"level":"INFO","time":"2023-08-31T23:58:53.264+0800","caller":"bluebell/main.go:101","msg":"Shutdown Server ..."}
 {"level":"INFO","time":"2023-08-31T23:58:53.264+0800","caller":"bluebell/main.go:110","msg":"Server exiting"}
+{"level":"DEBUG","time":"2023-09-02T16:45:42.142+0800","caller":"bluebell/main.go:51","msg":"logger init success..."}
+{"level":"INFO","time":"2023-09-02T16:45:43.414+0800","caller":"bluebell/main.go:101","msg":"Shutdown Server ..."}
+{"level":"INFO","time":"2023-09-02T16:45:43.414+0800","caller":"bluebell/main.go:110","msg":"Server exiting"}
+{"level":"DEBUG","time":"2023-09-02T17:01:50.713+0800","caller":"bluebell/main.go:51","msg":"logger init success..."}
+{"level":"INFO","time":"2023-09-02T17:07:57.309+0800","caller":"logger/logger.go:86","msg":"/api/v1/posts","status":200,"method":"GET","path":"/api/v1/posts","query":"","ip":"127.0.0.1","user-agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36","errors":"","cost":0.0001107}
+{"level":"INFO","time":"2023-09-02T17:07:57.523+0800","caller":"logger/logger.go:86","msg":"/favicon.ico","status":200,"method":"GET","path":"/favicon.ico","query":"","ip":"127.0.0.1","user-agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36","errors":"","cost":0}
+{"level":"INFO","time":"2023-09-02T17:08:35.252+0800","caller":"bluebell/main.go:101","msg":"Shutdown Server ..."}
+{"level":"INFO","time":"2023-09-02T17:08:35.252+0800","caller":"bluebell/main.go:110","msg":"Server exiting"}
+{"level":"DEBUG","time":"2023-09-02T17:10:33.561+0800","caller":"bluebell/main.go:51","msg":"logger init success..."}
+{"level":"INFO","time":"2023-09-02T17:17:28.717+0800","caller":"bluebell/main.go:101","msg":"Shutdown Server ..."}
+{"level":"INFO","time":"2023-09-02T17:17:28.718+0800","caller":"bluebell/main.go:110","msg":"Server exiting"}
+{"level":"DEBUG","time":"2023-09-02T17:18:57.622+0800","caller":"bluebell/main.go:51","msg":"logger init success..."}
+{"level":"INFO","time":"2023-09-02T17:23:06.966+0800","caller":"bluebell/main.go:101","msg":"Shutdown Server ..."}
+{"level":"INFO","time":"2023-09-02T17:23:06.966+0800","caller":"bluebell/main.go:110","msg":"Server exiting"}
