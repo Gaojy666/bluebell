@@ -40,7 +40,7 @@ func GetPostVoteData(ids []string) (data []int64, err error) {
 	//for _, id := range ids {
 	//	key := getRedisKey(KeyPostVotedZsetPrefix + id)
 	//	// 查找key中分数是1的元素的数量 -> 统计每篇帖子的赞成票的数量
-	//	v := client.ZCount(ctx, key, "1", "1").Val()
+	//	v := client.ZCount(ctx, key, "1", "1").Val() // ZCount会返回分数在min和max范围内的成员数量
 	//	data = append(data, v)
 	//}
 
@@ -69,7 +69,7 @@ func GetPostVoteData(ids []string) (data []int64, err error) {
 
 // GetCommunityPostIDsInOrder 按社区查询ids
 func GetCommunityPostIDsInOrder(p *models.ParamPostList) ([]string, error) {
-	// 使用zinterstore 把分区的set与按梯子分数的zset取交集 生成一个新的zset
+	// 使用zinterstore 把分区的set与按帖子分数的zset取交集 生成一个新的zset
 	// 针对新的zset，按之前的逻辑取数据
 	orderKey := getRedisKey(KeyPostTimeZset)
 	if p.Order == models.OrderScore {

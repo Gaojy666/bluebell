@@ -53,16 +53,19 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "example": "score",
+                        "description": "排序依据",
                         "name": "order",
                         "in": "query"
                     },
                     {
                         "type": "integer",
+                        "description": "页码",
                         "name": "page",
                         "in": "query"
                     },
                     {
                         "type": "integer",
+                        "description": "每页数据量",
                         "name": "size",
                         "in": "query"
                     }
@@ -135,9 +138,11 @@ const docTemplate = `{
             ],
             "properties": {
                 "author_id": {
+                    "description": "作者id",
                     "type": "integer"
                 },
                 "author_name": {
+                    "description": "作者",
                     "type": "string"
                 },
                 "community": {
@@ -149,24 +154,31 @@ const docTemplate = `{
                     ]
                 },
                 "community_id": {
+                    "description": "社区id",
                     "type": "integer"
                 },
                 "content": {
+                    "description": "帖子内容",
                     "type": "string"
                 },
                 "create_time": {
+                    "description": "帖子创建时间",
                     "type": "string"
                 },
                 "id": {
+                    "description": "帖子",
                     "type": "integer"
                 },
                 "status": {
+                    "description": "帖子状态",
                     "type": "integer"
                 },
                 "title": {
+                    "description": "帖子标题",
                     "type": "string"
                 },
                 "vote_num": {
+                    "description": "投票数",
                     "type": "integer"
                 }
             }

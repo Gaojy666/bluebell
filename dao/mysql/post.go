@@ -19,9 +19,8 @@ func CreatePost(p *models.Post) (err error) {
 	return
 }
 
-// 根据ID查询单个帖子详情
+// 根据ID查询单个帖子详情	post = new(models.Post)
 func GetPostByID(pid int64) (post *models.Post, err error) {
-	post = new(models.Post)
 	sqlStr := `select 
 			post_id, title, content, author_id, community_id, create_time
 			from post 
@@ -54,7 +53,7 @@ func GetPostListByIDs(ids []string) (postList []*models.Post, err error) {
 	sqlStr := `select
 			post_id, title, content, author_id, community_id, create_time
 			from post
-			while post_id  in (?)
+			where post_id  in (?)
 			order by FIND_IN_SET(post_id, ?)
 		`
 	// sqlx.In批量查询

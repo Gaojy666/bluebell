@@ -2,6 +2,7 @@ package logic
 
 import (
 	"bluebell/dao/mysql"
+	"bluebell/dao/redis"
 	"bluebell/models"
 	"bluebell/pkg/jwt"
 	"bluebell/pkg/snowflake"
@@ -14,6 +15,7 @@ func SignUp(p *models.ParamSignUp) (err error) {
 	if err := mysql.CheckUserExist(p.Username); err != nil {
 		return err
 	}
+
 	// 2.生成UID
 	userID := snowflake.GenID()
 	// 构造一个User实例
@@ -42,5 +44,9 @@ func Login(p *models.ParamLogin) (user *models.User, err error) {
 		return
 	}
 	user.Token = token
+
+	// 将userId-token映射关系存到Redis中
+	err = redis.StoreUserToken(user.UserID, token)
+
 	return
 }

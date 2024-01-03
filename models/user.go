@@ -1,7 +1,7 @@
 package models
 
 type User struct {
-	UserID   int64  `db:"user_id"`
+	UserID   int64  `db:"user_id, string"`
 	Username string `db:"username"`
 	Password string `db:"password"`
 	Token    string

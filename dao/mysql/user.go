@@ -31,8 +31,8 @@ func InsertUser(user *models.User) (err error) {
 	user.Password = encryptPassword(user.Password)
 	// 执行sql语句入库
 	sqlStr := `insert into user(user_id, username, password) values (?, ?, ?)`
-	db.Exec(sqlStr, user.UserID, user.Username, user.Password)
-	return
+	_, err = db.Exec(sqlStr, user.UserID, user.Username, user.Password)
+	return err
 }
 
 func encryptPassword(oPassword string) string {

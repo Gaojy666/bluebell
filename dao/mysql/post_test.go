@@ -6,6 +6,7 @@ import (
 	"testing"
 )
 
+// 还需要初始化db
 func init() {
 	dbCfg := settings.MySQLConfig{
 		Host:         "127.0.0.1",

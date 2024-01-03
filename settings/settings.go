@@ -49,10 +49,11 @@ type RedisConfig struct {
 }
 
 // 利用viper管理配置文件
-func Init() (err error) {
-	viper.SetConfigFile("./conf/config.yaml")
+// func Init() (err error) {
+func Init(filePath string) (err error) {
+	//viper.SetConfigFile("./conf/config.yaml")
 
-	//viper.SetConfigFile(filepath)
+	viper.SetConfigFile(filePath)
 
 	err = viper.ReadInConfig() // 读取配置信息
 	if err != nil {

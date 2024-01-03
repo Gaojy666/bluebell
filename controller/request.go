@@ -13,7 +13,7 @@ var ErrorUserNotLogin = errors.New("用户未登录")
 
 // GetCurrentUserID 获取当前登录的用户ID
 func GetCurrentUserID(c *gin.Context) (userID int64, err error) {
-	// 接口值转换为int64
+	// 接口值转换为int64 ????????????????
 	uid, ok := c.Get(CtxUserIdKey)
 	if !ok {
 		err = ErrorUserNotLogin

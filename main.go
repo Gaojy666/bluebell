@@ -32,13 +32,13 @@ import (
 // @host 127.0.0.1:8080
 // @BasePath /api/v1
 func main() {
-	//if len(os.Args) < 2 {
-	//	fmt.Println("need config file, eg: web_app config.yaml")
-	//	return
-	//}
+	if len(os.Args) < 2 {
+		fmt.Println("need config file, eg: web_app config.yaml")
+		return
+	}
 	// 1. 加载配置
-	//if err := settings.Init(os.Args[1]); err != nil {
-	if err := settings.Init(); err != nil {
+	if err := settings.Init(os.Args[1]); err != nil {
+		//if err := settings.Init(); err != nil {
 		fmt.Printf("init settings failed, err:%v\n", err)
 		return
 	}

@@ -12,7 +12,6 @@ import (
 )
 
 // 投票
-
 func PostVoteController(c *gin.Context) {
 	// 参数校验
 	p := new(models.ParamVoteData)

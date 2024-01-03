@@ -2,7 +2,9 @@ package middlewares
 
 import (
 	"bluebell/controller"
+	"bluebell/dao/redis"
 	"bluebell/pkg/jwt"
+	"net/http"
 	"strings"
 
 	"github.com/gin-gonic/gin"
@@ -35,6 +37,21 @@ func JWTAuthMiddleWare() func(c *gin.Context) {
 			c.Abort()
 			return
 		}
+
+		// 用来校验用户携带的token是否与存储的userID-token一致
+		token, err := redis.GetTokenFromID(mc.UserId)
+		if err != nil {
+			controller.ResponseError(c, controller.CodeServerBusy)
+			c.Abort()
+			return
+		}
+		// 如果不一致，则说明有第二个设备登陆了，当前第一个设备只能退出登录
+		if token != parts[1] {
+			controller.ResponseError(c, controller.CodeInvalidatedLogin)
+			c.Redirect(http.StatusTemporaryRedirect, "/api/v1/login")
+			return
+		}
+
 		// 将当前请求的username信息保存到请求的上下文c上
 		c.Set(controller.CtxUserIdKey, mc.UserId)
 		c.Next() // 后续的处理函数的请求中，可以用过c.Get(CtxUserIdKey)来获取当前请求的用户信息
